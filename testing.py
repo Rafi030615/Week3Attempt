@@ -58,14 +58,14 @@ with col3:
 col1, col2 = st.columns([1, 3])
 
 with col1:
-    user_id = st.text_input("Enter your ID (4 digits only)", st.session_state.user_id)
+    user_id = st.text_input("Masukkan ID (Hanya 4 digit)", st.session_state.user_id)
     st.session_state.user_id = user_id
     if user_id and not user_id.isdigit():
-        st.warning("User ID must be numeric.")
+        st.warning("ID harus numeric.")
     elif user_id and len(user_id) != 4:
-        st.warning("User ID must be exactly 4 digits.")
+        st.warning("ID harus 4 digit.")
     elif user_id and user_id not in quota_dict:
-        st.warning("User ID not registered. Please contact support.")
+        st.warning("ID tidak terdaftar, periksa kembali.")
 
 with col2:
     uploaded_file = st.file_uploader("Choose a file", type=["csv", "xlsx"])
@@ -98,16 +98,13 @@ if uploaded_file is not None:
             quota_dict[user_id] = str(current_quota - 1)
             st.session_state.quota = current_quota - 1
             st.write(f"Remaining attempts: {st.session_state.quota}")
-            # Save the updated quota_dict to text file
             save_quota(quota_dict)
             
-            # Process the validation
             try:
                 if missing_values.sum() == 0 and duplicated_rows == 0:
-                    # Check if all columns except the target are numeric
                     non_numeric_columns = df.select_dtypes(exclude=[np.number]).columns
                     if not set(non_numeric_columns) - {target_column}:
-                        # Check if target column is suitable for selected task
+
                         if task_type == "Regression" and df[target_column].dtype in [np.int64, np.float64]:
                             X = df.drop(columns=[target_column])
                             y = df[target_column]
@@ -133,9 +130,9 @@ if uploaded_file is not None:
                             st.markdown(f"<div style='text-align: center; background-color: #fff3cd; padding: 10px; border-radius: 5px;'><strong>Generated Token: {token}</strong></div>", unsafe_allow_html=True)
                         
                         else:
-                            display_message("Target column type does not match the selected task.", 'error')
+                            display_message("DATA BELUM SESUAI", 'error')
                     else:
-                        display_message("All columns except the target must be numeric.", 'error')
+                        display_message("DATA BELUM SESUAI", 'error')
                 else:
                     display_message("DATA BELUM SESUAI", 'error')
                 
@@ -144,6 +141,6 @@ if uploaded_file is not None:
                 st.write(f"Error: {e}")
         else:
             if user_id and len(user_id) == 4 and user_id not in quota_dict:
-                st.warning("User ID not registered. Please contact support.")
+                st.warning("ID tidak terdaftar, periksa kembali.")
 else:
     st.write("Masukkan Dataset Yang Ingin Diuji.")
