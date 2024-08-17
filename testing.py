@@ -6,7 +6,17 @@ from sklearn.model_selection import train_test_split
 import random
 import string
 import os
-from scipy import stats
+
+st.markdown(
+    """
+    <style>
+    .css-1t7j1y7 {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 QUOTA_FILE_PATH = 'user_quota.txt'
 
