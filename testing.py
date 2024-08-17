@@ -7,17 +7,6 @@ import random
 import string
 import os
 
-st.markdown(
-    """
-    <style>
-    .css-1t7j1y7 {
-        display: none;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 QUOTA_FILE_PATH = 'user_quota.txt'
 
 def load_quota():
@@ -60,6 +49,14 @@ def detect_outliers_iqr(series):
     Q3 = series.quantile(0.75)
     IQR = Q3 - Q1
     return ((series < (Q1 - 2 * IQR)) | (series > (Q3 + 2 * IQR)))
+
+def determine_data_type(series):
+    if pd.api.types.is_numeric_dtype(series):
+        if len(series.unique()) > 10:  # A simple heuristic for continuous data
+            return 'continuous'
+        else:
+            return 'discrete'
+    return 'unknown'
 
 if 'user_id' not in st.session_state:
     st.session_state.user_id = ''
@@ -127,7 +124,9 @@ if uploaded_file is not None:
                 if missing_values.sum() == 0 and duplicated_rows == 0:
                     non_numeric_columns = df.select_dtypes(exclude=[np.number]).columns
                     if not set(non_numeric_columns) - {target_column}:
-                        if task_type == "Regression" and df[target_column].dtype in [np.int64, np.float64]:
+                        target_data_type = determine_data_type(df[target_column])
+                        
+                        if task_type == "Regression" and target_data_type == 'continuous':
                             X = df.drop(columns=[target_column])
                             y = df[target_column]
                             X = pd.get_dummies(X, drop_first=True)
@@ -148,7 +147,7 @@ if uploaded_file is not None:
                                 display_message("DATA SUDAH SESUAI", 'success')
                                 st.markdown(f"<div style='text-align: center; background-color: #fff3cd; padding: 10px; border-radius: 5px;'><strong>Token: {token}</strong></div>", unsafe_allow_html=True)
                         
-                        elif task_type == "Classification" and df[target_column].dtype in [np.int64, np.float64]:
+                        elif task_type == "Classification" and target_data_type == 'discrete':
                             class_distribution = df[target_column].value_counts(normalize=True)
                             imbalance_threshold = 0.45
                             
