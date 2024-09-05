@@ -12,6 +12,7 @@ hide_st_style = """
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+footer > div:first-of-type {visibility: hidden;} /* Menyembunyikan "Hosted with Streamlit" */
 </style>
 """
 
