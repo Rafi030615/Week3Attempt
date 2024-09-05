@@ -1,0 +1,24 @@
+name: Update File Every Minute
+
+on:
+  schedule:
+    - cron: '* * * * *'  # Menjalankan setiap menit
+
+jobs:
+  update-file:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Update quota file
+      run: |
+        echo "user_id,quota,tokens" > user_quota.txt
+        echo "example_user,10,token1,token2" >> user_quota.txt
+
+    - name: Commit and push changes
+      uses: EndBug/add-and-commit@v9
+      with:
+        author_name: 'GitHub Actions'
+        author_email: 'actions@github.com'
+        message: 'Update user_quota.txt'
