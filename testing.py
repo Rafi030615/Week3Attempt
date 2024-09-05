@@ -6,13 +6,24 @@ from sklearn.model_selection import train_test_split
 import random
 import string
 import os
+import streamlit.components.v1 as components
 
-hide_github_icon = """
-#MainMenu {
-  visibility: hidden;
-}
+# Buat komponen HTML untuk menghapus elemen dengan teks tertentu
+remove_fork_button = """
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var elements = document.querySelectorAll('[data-testid="stActionButtonLabel"]');
+    elements.forEach(function(element) {
+        if (element.textContent.trim() === 'Fork') {
+            element.style.display = 'none';
+        }
+    });
+});
+</script>
 """
-st.markdown(hide_github_icon, unsafe_allow_html=True)
+
+# Menyematkan komponen HTML di dalam aplikasi Streamlit
+components.html(remove_fork_button, height=0)
 
 
 QUOTA_FILE_PATH = 'user_quota.txt'
